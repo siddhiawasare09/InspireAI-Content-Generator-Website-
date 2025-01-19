@@ -16,13 +16,12 @@ import moment from "moment";
 import { totalUsageContext } from "@/app/(context)/TotalUsageContext";
 import { useRouter } from "next/navigation";
 
-interface PROPS {
-  params: {
-    "template-slug": string;
-  };
+interface PageParams {
+  "template-slug": string;
 }
 
-function CreateNewContent(props: PROPS) {
+// The params are automatically passed by Next.js for dynamic routes in the app directory
+const CreateNewContent = ({ params }: { params: PageParams }) => {
   const [templateSlug, setTemplateSlug] = useState<string | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<TEMPLATE | undefined>(undefined);
   const [loading, setLoading] = useState(false);
@@ -34,7 +33,7 @@ function CreateNewContent(props: PROPS) {
   useEffect(() => {
     const fetchParams = () => {
       try {
-        const slug = props.params["template-slug"];
+        const slug = params["template-slug"];
         setTemplateSlug(slug);
 
         // Find the selected template
@@ -46,7 +45,7 @@ function CreateNewContent(props: PROPS) {
     };
 
     fetchParams();
-  }, [props.params]);
+  }, [params]);
 
   const GenerateAIContent = async (formData: any) => {
     if (totalUsage >= 10000) {
@@ -127,6 +126,6 @@ function CreateNewContent(props: PROPS) {
       </div>
     </div>
   );
-}
+};
 
 export default CreateNewContent;
