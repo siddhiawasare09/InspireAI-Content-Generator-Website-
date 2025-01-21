@@ -20,7 +20,6 @@ interface PageParams {
   "template-slug": string;
 }
 
-// The params are automatically passed by Next.js for dynamic routes in the app directory
 const CreateNewContent = ({ params }: { params: PageParams }) => {
   const [templateSlug, setTemplateSlug] = useState<string | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<TEMPLATE | undefined>(undefined);
@@ -31,20 +30,20 @@ const CreateNewContent = ({ params }: { params: PageParams }) => {
   const { totalUsage, setTotalUsage } = useContext(totalUsageContext);
 
   useEffect(() => {
-    const fetchParams = () => {
-      try {
-        const slug = params["template-slug"];
-        setTemplateSlug(slug);
+    if (!params || !params["template-slug"]) {
+      console.error("Missing template slug in params");
+      return;
+    }
 
-        // Find the selected template
-        const template = Templates.find((item) => item.slug === slug);
-        setSelectedTemplate(template);
-      } catch (error) {
-        console.error("Error fetching params:", error);
-      }
-    };
+    const slug = params["template-slug"];
+    setTemplateSlug(slug);
 
-    fetchParams();
+    const template = Templates.find((item) => item.slug === slug);
+    if (template) {
+      setSelectedTemplate(template);
+    } else {
+      console.error("Template not found for slug:", slug);
+    }
   }, [params]);
 
   const GenerateAIContent = async (formData: any) => {
@@ -65,7 +64,6 @@ const CreateNewContent = ({ params }: { params: PageParams }) => {
       setAiOutput(aiResponse);
       await SaveInDb(formData, selectedTemplate?.slug, aiResponse);
 
-      // Directly update credits without recalculating from the database
       UpdateUsage(aiResponse);
     } catch (error) {
       console.error("Error generating AI content:", error);
@@ -129,3 +127,4 @@ const CreateNewContent = ({ params }: { params: PageParams }) => {
 };
 
 export default CreateNewContent;
+
