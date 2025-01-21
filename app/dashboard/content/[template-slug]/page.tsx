@@ -16,17 +16,17 @@ import moment from "moment";
 import { totalUsageContext } from "@/app/(context)/TotalUsageContext";
 import { useRouter } from "next/navigation";
 
-// Define PageParams correctly
+// Update PageParams to be dynamic and part of Next.js routing
 interface PageParams {
   "template-slug": string;
 }
 
-// The props expected by the CreateNewContent component
-interface PageProps {
-  params: PageParams; // This is how the dynamic params should be passed in Next.js 13+
-}
+type CreateNewContentProps = {
+  params: PageParams;
+};
 
-const CreateNewContent = ({ params }: PageProps) => {
+// The params are automatically passed by Next.js for dynamic routes in the app directory
+const CreateNewContent = ({ params }: CreateNewContentProps) => {
   const [templateSlug, setTemplateSlug] = useState<string | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<TEMPLATE | undefined>(undefined);
   const [loading, setLoading] = useState(false);
