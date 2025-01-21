@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 
 // Update PageParams to be dynamic and part of Next.js routing
 interface PageParams {
-  "template-slug": string;
+  templateSlug: string;
 }
 
 type CreateNewContentProps = {
@@ -38,7 +38,7 @@ const CreateNewContent = ({ params }: CreateNewContentProps) => {
   useEffect(() => {
     const fetchParams = () => {
       try {
-        const slug = params["template-slug"];
+        const slug = params.templateSlug;
         setTemplateSlug(slug);
 
         // Find the selected template
