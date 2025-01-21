@@ -127,3 +127,4 @@ const CreateNewContent = ({ params }: { params: PageParams }) => {
 };
 
 export default CreateNewContent;
+
