@@ -16,11 +16,17 @@ import moment from "moment";
 import { totalUsageContext } from "@/app/(context)/TotalUsageContext";
 import { useRouter } from "next/navigation";
 
+// Define PageParams correctly
 interface PageParams {
   "template-slug": string;
 }
 
-const CreateNewContent = ({ params }: { params: PageParams }) => {
+// The props expected by the CreateNewContent component
+interface PageProps {
+  params: PageParams; // This is how the dynamic params should be passed in Next.js 13+
+}
+
+const CreateNewContent = ({ params }: PageProps) => {
   const [templateSlug, setTemplateSlug] = useState<string | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<TEMPLATE | undefined>(undefined);
   const [loading, setLoading] = useState(false);
@@ -30,20 +36,20 @@ const CreateNewContent = ({ params }: { params: PageParams }) => {
   const { totalUsage, setTotalUsage } = useContext(totalUsageContext);
 
   useEffect(() => {
-    if (!params || !params["template-slug"]) {
-      console.error("Missing template slug in params");
-      return;
-    }
+    const fetchParams = () => {
+      try {
+        const slug = params["template-slug"];
+        setTemplateSlug(slug);
 
-    const slug = params["template-slug"];
-    setTemplateSlug(slug);
+        // Find the selected template
+        const template = Templates.find((item) => item.slug === slug);
+        setSelectedTemplate(template);
+      } catch (error) {
+        console.error("Error fetching params:", error);
+      }
+    };
 
-    const template = Templates.find((item) => item.slug === slug);
-    if (template) {
-      setSelectedTemplate(template);
-    } else {
-      console.error("Template not found for slug:", slug);
-    }
+    fetchParams();
   }, [params]);
 
   const GenerateAIContent = async (formData: any) => {
@@ -64,6 +70,7 @@ const CreateNewContent = ({ params }: { params: PageParams }) => {
       setAiOutput(aiResponse);
       await SaveInDb(formData, selectedTemplate?.slug, aiResponse);
 
+      // Directly update credits without recalculating from the database
       UpdateUsage(aiResponse);
     } catch (error) {
       console.error("Error generating AI content:", error);
@@ -127,4 +134,3 @@ const CreateNewContent = ({ params }: { params: PageParams }) => {
 };
 
 export default CreateNewContent;
-
